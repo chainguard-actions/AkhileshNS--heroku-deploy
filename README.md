@@ -12,7 +12,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v3.13.14 | [`v3.13.14`](https://github.com/chainguard-actions/AkhileshNS-heroku-deploy/tree/v3.13.14) | [`74c2aff`](https://github.com/AkhileshNS/heroku-deploy/commit/74c2affebaa8010fb38a7ff9bb4568d57fd4fdf2) |
 | v3.13.15 | [`v3.13.15`](https://github.com/chainguard-actions/AkhileshNS-heroku-deploy/tree/v3.13.15) | [`581dd28`](https://github.com/AkhileshNS/heroku-deploy/commit/581dd286c962b6972d427fcf8980f60755c15520) |
 | v3.14.15 | [`v3.14.15`](https://github.com/chainguard-actions/AkhileshNS-heroku-deploy/tree/v3.14.15) | [`e3eb99d`](https://github.com/AkhileshNS/heroku-deploy/commit/e3eb99d45a8e2ec5dca08735e089607befa4bf28) |
-| v3.15.15 | [`v3.15.15`](https://github.com/chainguard-actions/AkhileshNS-heroku-deploy/tree/v3.15.15) | — |
+| v3.15.15 | [`v3.15.15`](https://github.com/chainguard-actions/AkhileshNS-heroku-deploy/tree/v3.15.15) | [`1b08091`](https://github.com/AkhileshNS/heroku-deploy/commit/1b080913896a5d6d44a18e9e208f8eb1fee9b0f7) |
 
 ## Privacy
 
