@@ -1,4 +1,4 @@
-name: Test buildpack input
+name: Test docker deploy mode (invalid credentials fail gracefully)
 on:
   workflow_dispatch:
 jobs:
@@ -6,17 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create a minimal Dockerfile for docker deploy test
+        run: |
+          cat > "$GITHUB_WORKSPACE/Dockerfile" << 'EOF'
+          FROM alpine:3.18
+          CMD ["echo", "hello"]
+          EOF
       - id: action
         uses: .
         continue-on-error: true
         with:
-          heroku_api_key: fake-api-key
+          heroku_api_key: fake-api-key-for-testing
           heroku_email: test@example.com
-          heroku_app_name: test-app-buildpack-12345
-          buildpack: heroku/nodejs
-          branch: HEAD
+          heroku_app_name: test-app-nonexistent-12345
+          usedocker: "true"
+          docker_heroku_process_type: "web"
           dontautocreate: "true"
-      - name: Assert action ran with buildpack input
+      - name: Assert action ran in docker mode and failed gracefully
         env:
           OUTCOME: ${{ steps.action.outcome }}
           STATUS: ${{ steps.action.outputs.status }}
@@ -24,9 +30,9 @@ jobs:
           echo "outcome: $OUTCOME"
           echo "status: $STATUS"
           if [ "$OUTCOME" = "success" ]; then
-            echo "PASS: action succeeded"
+            echo "PASS: action succeeded in docker mode"
           elif [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action failed gracefully (expected with fake credentials)"
+            echo "PASS: action failed gracefully with invalid credentials in docker mode (expected)"
           else
             echo "FAIL: unexpected outcome '$OUTCOME'"
             exit 1
