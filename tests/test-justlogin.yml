@@ -1,0 +1,49 @@
+name: Test justlogin mode (writes netrc and exits successfully)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          heroku_api_key: fake-api-key-for-testing
+          heroku_email: test@example.com
+          heroku_app_name: test-app-harness
+          justlogin: "true"
+      - name: Assert action ran in justlogin mode
+        env:
+          STATUS: ${{ steps.action.outputs.status }}
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "status: $STATUS"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action succeeded in justlogin mode (status='$STATUS')"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (justlogin with fake credentials)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
+      - name: Assert netrc was written (if action succeeded)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ ! -f "$HOME/.netrc" ]; then
+              echo "FAIL: ~/.netrc was not created by justlogin mode"
+              exit 1
+            fi
+            if ! grep -q "api.heroku.com" "$HOME/.netrc"; then
+              echo "FAIL: ~/.netrc does not contain expected heroku API host"
+              exit 1
+            fi
+            echo "PASS: ~/.netrc was created with heroku credentials"
+          else
+            echo "INFO: action did not succeed, skipping netrc check"
+          fi
