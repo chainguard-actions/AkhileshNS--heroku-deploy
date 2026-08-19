@@ -1,4 +1,4 @@
-name: Test buildpack input
+name: Test docker_build_args input
 on:
   workflow_dispatch:
 jobs:
@@ -12,10 +12,13 @@ jobs:
         with:
           heroku_api_key: fake-api-key
           heroku_email: test@example.com
-          heroku_app_name: test-app-buildpack
-          buildpack: heroku/nodejs
+          heroku_app_name: test-app-docker-args
+          usedocker: "true"
+          docker_build_args: |
+            NODE_ENV=production
+            APP_VERSION=1.0.0
           dontautocreate: "true"
-      - name: Assert action ran with buildpack input (fails gracefully on fake credentials)
+      - name: Assert action ran with docker_build_args input (fails gracefully on fake credentials)
         env:
           OUTCOME: ${{ steps.action.outcome }}
           STATUS: ${{ steps.action.outputs.status }}
