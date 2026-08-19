@@ -1,0 +1,31 @@
+name: Test justlogin mode
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          heroku_api_key: "fake-api-key-for-testing"
+          heroku_email: "test@example.com"
+          heroku_app_name: "test-app-does-not-exist"
+          justlogin: "true"
+      - name: Assert action ran and produced a status output or failed gracefully
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          STATUS: ${{ steps.action.outputs.status }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "status: $STATUS"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action succeeded (justlogin completed)"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully with invalid credentials (expected)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

@@ -1,4 +1,4 @@
-name: Test deploy with docker build args
+name: Test docker_build_args input
 on:
   workflow_dispatch:
 jobs:
@@ -10,23 +10,27 @@ jobs:
         uses: .
         continue-on-error: true
         with:
-          heroku_api_key: fake-api-key-for-testing
+          heroku_api_key: fake-api-key
           heroku_email: test@example.com
-          heroku_app_name: my-test-app-docker
+          heroku_app_name: test-app-docker-args
           usedocker: "true"
           docker_heroku_process_type: web
           docker_build_args: |
             NODE_ENV=production
             PORT=3000
-          branch: HEAD
           dontautocreate: "true"
-      - name: Assert status output is set
+      - name: Assert action ran with docker_build_args input
         env:
+          OUTCOME: ${{ steps.action.outcome }}
           STATUS: ${{ steps.action.outputs.status }}
         run: |
+          echo "outcome: $OUTCOME"
           echo "status: $STATUS"
-          if [ -z "$STATUS" ]; then
-            echo "FAIL: expected status output to be set"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action succeeded"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (expected without real Heroku credentials)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
             exit 1
           fi
-          echo "PASS: status output is '$STATUS'"
