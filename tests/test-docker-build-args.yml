@@ -1,4 +1,4 @@
-name: Test buildpack input
+name: Test docker_build_args input
 on:
   workflow_dispatch:
 jobs:
@@ -12,9 +12,13 @@ jobs:
         with:
           heroku_api_key: fake-key-for-testing
           heroku_email: test@example.com
-          heroku_app_name: test-app-buildpack
-          buildpack: heroku/nodejs
-      - name: Assert action ran with buildpack input
+          heroku_app_name: test-app-docker-args
+          usedocker: "true"
+          docker_build_args: |
+            NODE_ENV=production
+            APP_VERSION=1.0.0
+          docker_heroku_process_type: web
+      - name: Assert action ran with docker_build_args input
         env:
           OUTCOME: ${{ steps.action.outcome }}
           STATUS: ${{ steps.action.outputs.status }}
@@ -24,7 +28,7 @@ jobs:
           if [ "$OUTCOME" = "success" ]; then
             echo "PASS: action succeeded"
           elif [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action failed gracefully (expected without real Heroku credentials)"
+            echo "PASS: action failed gracefully (expected without real Heroku credentials or Dockerfile)"
           else
             echo "FAIL: unexpected outcome '$OUTCOME'"
             exit 1
